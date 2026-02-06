@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const DEFAULT_EPISODE = 1;
+const DEFAULT_STREAM_BASE_URL = 'http://localhost:8787';
 
 export function WatchPage() {
   const { anilistId } = useParams();
@@ -10,6 +11,7 @@ export function WatchPage() {
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
 
   const numericId = useMemo(() => Number(anilistId), [anilistId]);
+  const streamBaseUrl = useMemo(() => localStorage.getItem('stream_base_url') ?? DEFAULT_STREAM_BASE_URL, []);
 
   const handleWatch = async () => {
     if (!numericId) {
@@ -21,10 +23,17 @@ export function WatchPage() {
     setStreamUrl(null);
 
     try {
-      const response = await fetch(`/stream?anilist_id=${numericId}&episode=${episode}`);
+      const response = await fetch(`${streamBaseUrl}/stream?anilist_id=${numericId}&episode=${episode}`);
+      const contentType = response.headers.get('content-type') ?? '';
       if (!response.ok) {
-        throw new Error(`Stream resolver error (${response.status})`);
+        const fallback = contentType.includes('application/json') ? await response.json() : await response.text();
+        throw new Error(typeof fallback === 'string' ? fallback : JSON.stringify(fallback));
       }
+
+      if (!contentType.includes('application/json')) {
+        throw new Error('Stream resolver did not return JSON. Check the backend URL.');
+      }
+
       const payload: { url: string | null; note?: string } = await response.json();
       if (!payload.url) {
         setStatus(payload.note ?? 'No stream URL returned yet.');
@@ -41,6 +50,7 @@ export function WatchPage() {
     <section>
       <h2>Watch</h2>
       <p className="hint">AniList ID: {numericId || 'Unknown'}</p>
+      <p className="hint">Stream resolver: {streamBaseUrl}</p>
 
       <label className="field">
         Episode

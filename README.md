@@ -35,3 +35,12 @@ The current provider is a placeholder until a real stream resolver is added.
 Each anime card now includes a **Watch** button that opens `/watch/:anilistId`. This page calls the
 backend `/stream` endpoint and displays the resolved URL (or a placeholder note until the resolver
 is implemented).
+
+
+## Stream resolver URL
+
+By default the Watch page calls `http://localhost:8787/stream`. If your backend runs elsewhere, set:
+
+```js
+localStorage.setItem('stream_base_url', 'http://localhost:8787')
+```
