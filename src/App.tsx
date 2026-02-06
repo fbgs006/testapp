@@ -3,6 +3,7 @@ import { HomePage } from './pages/HomePage';
 import { MyListPage } from './pages/MyListPage';
 import { BrowsePage } from './pages/BrowsePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { WatchPage } from './pages/WatchPage';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -24,6 +25,7 @@ export function App() {
           <Route path="/my-list" element={<MyListPage />} />
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/watch/:anilistId" element={<WatchPage />} />
         </Routes>
       </main>
 

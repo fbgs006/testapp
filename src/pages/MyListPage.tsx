@@ -2,6 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimeCard, type AnimeCardData } from '../components/AnimeCard';
 import { anilistRequest } from '../lib/anilist';
 
+type ViewerQuery = {
+  Viewer: {
+    id: number;
+    name: string;
+  };
+};
+
 type MyListQuery = {
   MediaListCollection: {
     lists: Array<{
@@ -19,6 +26,15 @@ type MyListQuery = {
     }>;
   };
 };
+
+const VIEWER_QUERY = `
+  query {
+    Viewer {
+      id
+      name
+    }
+  }
+`;
 
 const MEDIA_LIST_COLLECTION_QUERY = `
   query($type: MediaType!, $userId: Int!) {
@@ -44,35 +60,40 @@ export function MyListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lists, setLists] = useState<MyListQuery['MediaListCollection']['lists']>([]);
+  const [viewerName, setViewerName] = useState<string | null>(null);
 
-  const userId = useMemo(() => {
-    const raw = localStorage.getItem('anilist_user_id');
-    return raw ? Number(raw) : 0;
-  }, []);
+  const token = useMemo(() => localStorage.getItem('anilist_token') ?? '', []);
 
   useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      setError('No AniList user ID found. Set localStorage key "anilist_user_id" first.');
-      return;
-    }
+    const load = async () => {
+      if (!token) {
+        setLoading(false);
+        setError('Add your AniList access token to localStorage as "anilist_token" to load your list.');
+        return;
+      }
 
-    anilistRequest<MyListQuery>(MEDIA_LIST_COLLECTION_QUERY, { type: 'ANIME', userId })
-      .then((data) => {
+      try {
+        const viewer = await anilistRequest<ViewerQuery>(VIEWER_QUERY, undefined, token);
+        setViewerName(viewer.Viewer.name);
+
+        const data = await anilistRequest<MyListQuery>(MEDIA_LIST_COLLECTION_QUERY, { type: 'ANIME', userId: viewer.Viewer.id }, token);
         setLists(data.MediaListCollection.lists);
-      })
-      .catch((e: unknown) => {
+      } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Unknown error');
-      })
-      .finally(() => setLoading(false));
-  }, [userId]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void load();
+  }, [token]);
 
   if (loading) return <p>Loading your list…</p>;
   if (error) return <p className="error">{error}</p>;
 
   return (
     <section>
-      <h2>My List</h2>
+      <h2>My List {viewerName ? `(${viewerName})` : ''}</h2>
       {lists.map((list) => {
         const cards: AnimeCardData[] = list.entries.map((entry) => {
           const total = entry.media.episodes ?? '?';
