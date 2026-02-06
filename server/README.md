@@ -7,8 +7,9 @@ that the frontend can call to resolve episode streams.
 
 - `GET /health` → `{ "status": "ok" }`
 - `GET /stream?anilist_id=123&episode=1`
+- `POST /oauth/anilist/token` → exchanges an AniList authorization code for a token
 
-Example response:
+Example stream response:
 
 ```json
 {
@@ -20,11 +21,21 @@ Example response:
 }
 ```
 
+Example token exchange body:
+
+```json
+{
+  "clientId": "12345",
+  "clientSecret": "your-secret",
+  "redirectUri": "http://localhost:5173",
+  "code": "authorization-code"
+}
+```
+
 ## Status
 
 The current implementation uses a **PlaceholderProvider**. Swap this provider for a real
 stream resolver (scraper or API) once you're ready.
-
 
 ## Run
 

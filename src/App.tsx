@@ -5,7 +5,7 @@ import { MyListPage } from './pages/MyListPage';
 import { BrowsePage } from './pages/BrowsePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { WatchPage } from './pages/WatchPage';
-import { extractAniListTokenFromHash } from './lib/anilistAuth';
+import { extractAniListCodeFromSearch, extractAniListTokenFromHash } from './lib/anilistAuth';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -13,6 +13,8 @@ const links = [
   { to: '/browse', label: 'Browse' },
   { to: '/profile', label: 'Profile' },
 ];
+
+const DEFAULT_OAUTH_BASE_URL = 'http://localhost:8787';
 
 export function App() {
   const location = useLocation();
@@ -25,6 +27,39 @@ export function App() {
         window.history.replaceState(null, '', location.pathname);
       }
     }
+  }, [location]);
+
+  useEffect(() => {
+    const code = extractAniListCodeFromSearch(location.search);
+    if (!code) return;
+
+    const clientId = localStorage.getItem('anilist_client_id') ?? '';
+    const clientSecret = localStorage.getItem('anilist_client_secret') ?? '';
+    const redirectUri = localStorage.getItem('anilist_redirect_uri') ?? window.location.origin;
+    const oauthBaseUrl = localStorage.getItem('anilist_oauth_base_url') ?? DEFAULT_OAUTH_BASE_URL;
+
+    if (!clientId || !clientSecret) {
+      return;
+    }
+
+    fetch(`${oauthBaseUrl}/oauth/anilist/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, clientSecret, redirectUri, code }),
+    })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error ?? 'Token exchange failed.');
+        }
+        if (payload.access_token) {
+          localStorage.setItem('anilist_token', payload.access_token);
+          window.history.replaceState(null, '', location.pathname);
+        }
+      })
+      .catch(() => {
+        // Silently ignore for now; Profile page shows configuration help.
+      });
   }, [location]);
 
   return (

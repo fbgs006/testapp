@@ -46,6 +46,59 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (req.method === 'POST' && url.pathname === '/oauth/anilist/token') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    req.on('end', async () => {
+      try {
+        const { clientId, clientSecret, redirectUri, code } = JSON.parse(body) as {
+          clientId: string;
+          clientSecret: string;
+          redirectUri: string;
+          code: string;
+        };
+
+        if (!clientId || !clientSecret || !redirectUri || !code) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing OAuth exchange parameters.' }));
+          return;
+        }
+
+        const tokenResponse = await fetch('https://anilist.co/api/v2/oauth/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            grant_type: 'authorization_code',
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_uri: redirectUri,
+            code,
+          }),
+        });
+
+        const tokenPayload = await tokenResponse.json();
+        if (!tokenResponse.ok) {
+          res.writeHead(tokenResponse.status, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(tokenPayload));
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(tokenPayload));
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: error instanceof Error ? error.message : 'Token exchange failed.' }));
+      }
+    });
+    return;
+  }
+
   if (req.method === 'GET' && url.pathname === '/stream') {
     const anilistId = Number(url.searchParams.get('anilist_id'));
     const episode = Number(url.searchParams.get('episode'));

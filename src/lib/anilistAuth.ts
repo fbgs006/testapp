@@ -23,3 +23,9 @@ export function extractAniListTokenFromHash(hash: string) {
   const token = params.get('access_token');
   return token ?? null;
 }
+
+export function extractAniListCodeFromSearch(search: string) {
+  if (!search.startsWith('?')) return null;
+  const params = new URLSearchParams(search.slice(1));
+  return params.get('code');
+}

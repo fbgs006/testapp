@@ -8,11 +8,17 @@ const RESPONSE_TYPES = [
 
 type ResponseType = (typeof RESPONSE_TYPES)[number]['value'];
 
+const DEFAULT_OAUTH_BASE_URL = 'http://localhost:8787';
+
 export function ProfilePage() {
   const [clientId, setClientId] = useState(localStorage.getItem('anilist_client_id') ?? '');
+  const [clientSecret, setClientSecret] = useState(localStorage.getItem('anilist_client_secret') ?? '');
   const [redirectUri, setRedirectUri] = useState(localStorage.getItem('anilist_redirect_uri') ?? window.location.origin);
   const [responseType, setResponseType] = useState<ResponseType>(
     (localStorage.getItem('anilist_response_type') as ResponseType) ?? 'token',
+  );
+  const [oauthBaseUrl, setOauthBaseUrl] = useState(
+    localStorage.getItem('anilist_oauth_base_url') ?? DEFAULT_OAUTH_BASE_URL,
   );
 
   const authUrl = useMemo(() => {
@@ -22,11 +28,11 @@ export function ProfilePage() {
 
   const handleSave = () => {
     localStorage.setItem('anilist_client_id', clientId);
+    localStorage.setItem('anilist_client_secret', clientSecret);
     localStorage.setItem('anilist_redirect_uri', redirectUri);
     localStorage.setItem('anilist_response_type', responseType);
+    localStorage.setItem('anilist_oauth_base_url', oauthBaseUrl);
   };
-
-  const codeFlowSelected = responseType === 'code';
 
   return (
     <section>
@@ -39,8 +45,18 @@ export function ProfilePage() {
       </label>
 
       <label className="field">
+        AniList Client Secret (required for code flow)
+        <input value={clientSecret} onChange={(event) => setClientSecret(event.target.value)} />
+      </label>
+
+      <label className="field">
         Redirect URI
         <input value={redirectUri} onChange={(event) => setRedirectUri(event.target.value)} />
+      </label>
+
+      <label className="field">
+        OAuth Backend Base URL
+        <input value={oauthBaseUrl} onChange={(event) => setOauthBaseUrl(event.target.value)} />
       </label>
 
       <fieldset className="fieldset">
@@ -59,25 +75,19 @@ export function ProfilePage() {
         ))}
       </fieldset>
 
-      {codeFlowSelected ? (
-        <p className="warning">
-          Code flow requires a backend token exchange. Until that is built, use the Implicit (token) flow to load your list.
-        </p>
-      ) : null}
-
       <div className="button-row">
         <button type="button" className="secondary" onClick={handleSave}>
           Save settings
         </button>
         {authUrl ? (
-          <a className={`primary ${codeFlowSelected ? 'disabled' : ''}`} href={codeFlowSelected ? undefined : authUrl}>
+          <a className="primary" href={authUrl}>
             Login with AniList
           </a>
         ) : null}
       </div>
 
       {authUrl ? <p className="status">Auth URL: {authUrl}</p> : null}
-      <p className="status">Access token is saved automatically after login (implicit flow only).</p>
+      <p className="status">Access token is saved automatically after login.</p>
     </section>
   );
 }

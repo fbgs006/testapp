@@ -59,3 +59,11 @@ The token is saved to `localStorage.anilist_token` so My List can load.
 
 If you see `unsupported_grant_type`, ensure you are using the **Implicit (token)** flow. The Profile tab
 lets you switch between `response_type=token` and `response_type=code` (the latter requires a backend exchange).
+
+
+## Authorization Code exchange
+
+If you select the **Authorization Code** flow, the app will send the `code` to the backend
+`POST /oauth/anilist/token` endpoint (configured in Profile via **OAuth Backend Base URL**) to
+exchange it for an access token. This requires the server to be running and your client secret to
+be saved in the Profile settings.
