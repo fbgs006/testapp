@@ -26,6 +26,8 @@ export function ProfilePage() {
     localStorage.setItem('anilist_response_type', responseType);
   };
 
+  const codeFlowSelected = responseType === 'code';
+
   return (
     <section>
       <h2>Profile</h2>
@@ -57,19 +59,25 @@ export function ProfilePage() {
         ))}
       </fieldset>
 
+      {codeFlowSelected ? (
+        <p className="warning">
+          Code flow requires a backend token exchange. Until that is built, use the Implicit (token) flow to load your list.
+        </p>
+      ) : null}
+
       <div className="button-row">
         <button type="button" className="secondary" onClick={handleSave}>
           Save settings
         </button>
         {authUrl ? (
-          <a className="primary" href={authUrl}>
+          <a className={`primary ${codeFlowSelected ? 'disabled' : ''}`} href={codeFlowSelected ? undefined : authUrl}>
             Login with AniList
           </a>
         ) : null}
       </div>
 
       {authUrl ? <p className="status">Auth URL: {authUrl}</p> : null}
-      <p className="status">Access token is saved automatically after login.</p>
+      <p className="status">Access token is saved automatically after login (implicit flow only).</p>
     </section>
   );
 }
