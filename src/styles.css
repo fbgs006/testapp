@@ -108,3 +108,10 @@ body { margin: 0; background: #0f1220; color: #edf1ff; }
   color: #edf1ff;
 }
 .status { color: #c5cdef; margin-top: 0.8rem; word-break: break-all; }
+
+.button-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}

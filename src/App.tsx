@@ -1,9 +1,11 @@
-import { NavLink, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { MyListPage } from './pages/MyListPage';
 import { BrowsePage } from './pages/BrowsePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { WatchPage } from './pages/WatchPage';
+import { extractAniListTokenFromHash } from './lib/anilistAuth';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -13,6 +15,18 @@ const links = [
 ];
 
 export function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const token = extractAniListTokenFromHash(location.hash);
+      if (token) {
+        localStorage.setItem('anilist_token', token);
+        window.history.replaceState(null, '', location.pathname);
+      }
+    }
+  }, [location]);
+
   return (
     <div className="app-shell">
       <header className="top-bar">

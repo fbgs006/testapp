@@ -44,3 +44,12 @@ By default the Watch page calls `http://localhost:8787/stream`. If your backend 
 ```js
 localStorage.setItem('stream_base_url', 'http://localhost:8787')
 ```
+
+
+## AniList OAuth (Login button)
+
+1. Create an AniList app: https://anilist.co/settings/developer
+2. Add your client ID and redirect URI in the Profile tab.
+3. Tap **Login with AniList** to store the access token automatically.
+
+The token is saved to `localStorage.anilist_token` so My List can load.
