@@ -1,0 +1,84 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color-scheme: dark;
+  background: #0f1220;
+  color: #edf1ff;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f1220; color: #edf1ff; }
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  background: #151a2d;
+  border-bottom: 1px solid #2e3657;
+  padding: 0.8rem 1rem;
+}
+
+.top-bar h1 { margin: 0; font-size: 1.1rem; }
+.page-container { padding: 1rem; }
+
+.grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+}
+
+.anime-card {
+  background: #1a1f36;
+  border: 1px solid #2e3657;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.anime-card img,
+.image-fallback {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: #273153;
+  object-fit: cover;
+}
+
+.anime-card h3,
+.anime-card p {
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+}
+
+.anime-card h3 { font-size: 0.9rem; }
+.anime-card p { font-size: 0.8rem; color: #c5cdef; }
+
+.tab-bar {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #151a2d;
+  border-top: 1px solid #2e3657;
+}
+
+.tab-link {
+  padding: 0.75rem;
+  text-align: center;
+  color: #a7b2df;
+  text-decoration: none;
+}
+
+.tab-link.active {
+  color: #ffffff;
+  background: #212947;
+}
+
+.list-section { margin-top: 1rem; }
+.error { color: #ff9aa2; }
+
+.loading { color: #c5cdef; margin-top: 1rem; }
+.hint { color: #93a0d6; margin-top: 1rem; }
+.scroll-sentinel { height: 1px; }
