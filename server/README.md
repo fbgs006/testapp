@@ -9,19 +9,32 @@ that the frontend can call to resolve episode streams.
 - `GET /stream?anilist_id=123&episode=1`
 - `POST /oauth/anilist/token` → exchanges an AniList authorization code for a token
 
-Example stream response:
+## Stream map
+
+The resolver reads from `server/stream-map.json` (or `STREAM_MAP_PATH`) with this shape:
 
 ```json
 {
-  "anilistId": 123,
-  "episode": 1,
-  "url": null,
-  "source": null,
-  "note": "No stream resolver wired yet for AniList 123 episode 1."
+  "15125": {
+    "1": { "url": "https://example.com/episode-1.m3u8", "source": "custom" }
+  }
 }
 ```
 
-Example token exchange body:
+If a match is found, the resolver returns that URL.
+
+## Example responses
+
+```json
+{
+  "anilistId": 15125,
+  "episode": 1,
+  "url": "https://example.com/episode-1.m3u8",
+  "source": "custom"
+}
+```
+
+Token exchange body:
 
 ```json
 {
@@ -31,11 +44,6 @@ Example token exchange body:
   "code": "authorization-code"
 }
 ```
-
-## Status
-
-The current implementation uses a **PlaceholderProvider**. Swap this provider for a real
-stream resolver (scraper or API) once you're ready.
 
 ## Run
 

@@ -1,4 +1,7 @@
+import fs from 'node:fs';
 import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { URL } from 'node:url';
 
 type StreamResponse = {
@@ -15,21 +18,49 @@ type ResolveResult = {
   note?: string;
 };
 
+type StreamMap = Record<string, Record<string, { url: string; source?: string }>>;
+
 interface StreamProvider {
   resolve(anilistId: number, episode: number): Promise<ResolveResult>;
 }
 
-class PlaceholderProvider implements StreamProvider {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DEFAULT_STREAM_MAP_PATH = path.resolve(__dirname, '../stream-map.json');
+
+function loadStreamMap(mapPath: string): StreamMap {
+  try {
+    const raw = fs.readFileSync(mapPath, 'utf-8');
+    return JSON.parse(raw) as StreamMap;
+  } catch {
+    return {};
+  }
+}
+
+class FileMapProvider implements StreamProvider {
+  constructor(private mapPath: string) {}
+
   async resolve(anilistId: number, episode: number): Promise<ResolveResult> {
+    const map = loadStreamMap(this.mapPath);
+    const entry = map[String(anilistId)]?.[String(episode)];
+
+    if (!entry?.url) {
+      return {
+        url: null,
+        source: null,
+        note: `No stream URL mapped for AniList ${anilistId} episode ${episode}.`,
+      };
+    }
+
     return {
-      url: null,
-      source: null,
-      note: `No stream resolver wired yet for AniList ${anilistId} episode ${episode}.`,
+      url: entry.url,
+      source: entry.source ?? 'custom',
     };
   }
 }
 
-const provider: StreamProvider = new PlaceholderProvider();
+const streamMapPath = process.env.STREAM_MAP_PATH ?? DEFAULT_STREAM_MAP_PATH;
+const provider: StreamProvider = new FileMapProvider(streamMapPath);
 
 const server = http.createServer(async (req, res) => {
   if (!req.url) {
@@ -42,7 +73,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok' }));
+    res.end(JSON.stringify({ status: 'ok', streamMapPath }));
     return;
   }
 

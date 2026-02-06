@@ -78,3 +78,9 @@ If My List says **Invalid token**, check the Profile page:
 
 For **Authorization Code** flow, ensure the backend is running on the configured OAuth base URL and
 that your client secret matches the AniList app settings.
+
+
+## Stream resolver mapping
+
+To return a real stream URL, add entries to `server/stream-map.json` using the AniList ID and episode
+number. The backend will return that URL from `/stream` when you hit the Watch button.
