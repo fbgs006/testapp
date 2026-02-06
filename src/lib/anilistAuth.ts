@@ -1,10 +1,16 @@
 const DEFAULT_REDIRECT = window.location.origin;
 
-export function buildAniListAuthUrl(clientId: string, redirectUri: string = DEFAULT_REDIRECT) {
+type ResponseType = 'token' | 'code';
+
+export function buildAniListAuthUrl(
+  clientId: string,
+  redirectUri: string = DEFAULT_REDIRECT,
+  responseType: ResponseType = 'token',
+) {
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
-    response_type: 'token',
+    response_type: responseType,
   });
 
   return `https://anilist.co/api/v2/oauth/authorize?${params.toString()}`;

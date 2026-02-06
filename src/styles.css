@@ -115,3 +115,19 @@ body { margin: 0; background: #0f1220; color: #edf1ff; }
   flex-wrap: wrap;
   margin-top: 0.5rem;
 }
+
+.fieldset {
+  border: 1px solid #2e3657;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin: 0.8rem 0;
+}
+.legend {
+  padding: 0 0.4rem;
+}
+.radio-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.4rem;
+}

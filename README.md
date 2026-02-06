@@ -53,3 +53,9 @@ localStorage.setItem('stream_base_url', 'http://localhost:8787')
 3. Tap **Login with AniList** to store the access token automatically.
 
 The token is saved to `localStorage.anilist_token` so My List can load.
+
+
+## OAuth flow selection
+
+If you see `unsupported_grant_type`, ensure you are using the **Implicit (token)** flow. The Profile tab
+lets you switch between `response_type=token` and `response_type=code` (the latter requires a backend exchange).
