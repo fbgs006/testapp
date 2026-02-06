@@ -34,6 +34,9 @@ export function ProfilePage() {
     localStorage.setItem('anilist_oauth_base_url', oauthBaseUrl);
   };
 
+  const lastOAuthError = localStorage.getItem('anilist_oauth_error');
+  const savedToken = localStorage.getItem('anilist_token');
+
   return (
     <section>
       <h2>Profile</h2>
@@ -88,6 +91,8 @@ export function ProfilePage() {
 
       {authUrl ? <p className="status">Auth URL: {authUrl}</p> : null}
       <p className="status">Access token is saved automatically after login.</p>
+      {savedToken ? <p className="status">Token saved ✅</p> : <p className="status">Token missing ❌</p>}
+      {lastOAuthError ? <p className="warning">Last OAuth error: {lastOAuthError}</p> : null}
     </section>
   );
 }

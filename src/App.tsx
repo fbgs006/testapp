@@ -24,6 +24,7 @@ export function App() {
       const token = extractAniListTokenFromHash(location.hash);
       if (token) {
         localStorage.setItem('anilist_token', token);
+        localStorage.removeItem('anilist_oauth_error');
         window.history.replaceState(null, '', location.pathname);
       }
     }
@@ -39,6 +40,7 @@ export function App() {
     const oauthBaseUrl = localStorage.getItem('anilist_oauth_base_url') ?? DEFAULT_OAUTH_BASE_URL;
 
     if (!clientId || !clientSecret) {
+      localStorage.setItem('anilist_oauth_error', 'Missing client ID or secret for code exchange.');
       return;
     }
 
@@ -54,11 +56,14 @@ export function App() {
         }
         if (payload.access_token) {
           localStorage.setItem('anilist_token', payload.access_token);
+          localStorage.removeItem('anilist_oauth_error');
           window.history.replaceState(null, '', location.pathname);
+        } else {
+          throw new Error('Token exchange succeeded but no access_token was returned.');
         }
       })
-      .catch(() => {
-        // Silently ignore for now; Profile page shows configuration help.
+      .catch((error) => {
+        localStorage.setItem('anilist_oauth_error', error instanceof Error ? error.message : 'Token exchange failed.');
       });
   }, [location]);
 

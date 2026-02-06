@@ -67,3 +67,14 @@ If you select the **Authorization Code** flow, the app will send the `code` to t
 `POST /oauth/anilist/token` endpoint (configured in Profile via **OAuth Backend Base URL**) to
 exchange it for an access token. This requires the server to be running and your client secret to
 be saved in the Profile settings.
+
+
+## Troubleshooting invalid token
+
+If My List says **Invalid token**, check the Profile page:
+- "Token saved ✅" means an access token is stored.
+- "Token missing ❌" means OAuth did not complete.
+- Any "Last OAuth error" message will tell you why the exchange failed.
+
+For **Authorization Code** flow, ensure the backend is running on the configured OAuth base URL and
+that your client secret matches the AniList app settings.
