@@ -84,3 +84,18 @@ that your client secret matches the AniList app settings.
 
 To return a real stream URL, add entries to `server/stream-map.json` using the AniList ID and episode
 number. The backend will return that URL from `/stream` when you hit the Watch button.
+
+
+## Start the resolver
+
+The stream resolver is a separate Node service. Start it in another terminal:
+
+```bash
+node server/dist/index.js
+```
+
+Then set the PWA to point to it:
+
+```js
+localStorage.setItem('stream_base_url', 'http://localhost:8787')
+```
