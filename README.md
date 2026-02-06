@@ -2,7 +2,7 @@
 
 Minimal React + TypeScript starter for an AniList-inspired interface with:
 
-- **Home** (trending anime via AniList)
+- **Home** (trending anime via AniList with infinite scroll pagination)
 - **My List** (full list using `MediaListCollection`)
 - **Browse/Profile** placeholders
 

@@ -78,3 +78,7 @@ body { margin: 0; background: #0f1220; color: #edf1ff; }
 
 .list-section { margin-top: 1rem; }
 .error { color: #ff9aa2; }
+
+.loading { color: #c5cdef; margin-top: 1rem; }
+.hint { color: #93a0d6; margin-top: 1rem; }
+.scroll-sentinel { height: 1px; }
