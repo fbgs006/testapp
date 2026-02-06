@@ -22,3 +22,9 @@ localStorage.setItem('anilist_user_id', 'YOUR_USER_ID')
 ```
 
 Then reload and open `/my-list`.
+
+## Stream resolver backend (Node/TypeScript)
+
+A minimal Node/TypeScript service lives in `server/` and exposes the `/stream` endpoint the PWA will call.
+The current provider is a placeholder until a real stream resolver is added.
+
